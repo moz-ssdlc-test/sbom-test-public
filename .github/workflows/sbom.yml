@@ -3,6 +3,9 @@ name: syft-sbom-ci
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - 'release/**'
   workflow_dispatch:
 
 permissions:
@@ -11,6 +14,7 @@ permissions:
 
 jobs:
   sbom:
-    uses: saml-test-integrations/sbom-test/.github/workflows/syft-release-sbom.yml@main #mozilla/ssdlc-actions/.github/workflows/syft-release-sbom.yml@main
+    uses: mozilla/ssdlc-actions/.github/workflows/syft-release-sbom.yml@e5f4689e213becd11a05cc08c5ad666b6d515c7c
+
     with:
-      sbom_name: ${{ github.event.release.tag_name || 'manual' }}
+      sbom_name: ${{ github.event.release.tag_name || github.ref_name || 'manual' }}
