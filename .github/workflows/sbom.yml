@@ -1,4 +1,4 @@
-name: syft-sbom-ci
+name: ssdlc-sbom
 
 on:
   release:
