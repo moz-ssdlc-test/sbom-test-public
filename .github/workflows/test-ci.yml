@@ -13,7 +13,7 @@ jobs:
   
       - name: Build application
         run: |
-          echo "Building application on branch reference"
+          echo "Building application on ${{ github.ref_name }}"
           npm ci
       
       - name: Upload results to Codecov
