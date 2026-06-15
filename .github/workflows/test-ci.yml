@@ -12,8 +12,10 @@ jobs:
         uses: actions/checkout@v6
   
       - name: Build application
+        env:
+          BRANCH: ${{ github.ref_name }}
         run: |
-          echo "Building application on branch reference"
+          echo "Building application on $BRANCH"
           npm ci
       
       - name: Upload results to Codecov
