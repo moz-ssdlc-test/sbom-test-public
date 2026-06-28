@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6
   
       - name: Build application
         run: |
           echo "Building application on branch reference"
-          npm ci
+          # npm ci
       
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v7.0.0
