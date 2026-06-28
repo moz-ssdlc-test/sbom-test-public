@@ -12,4 +12,5 @@ jobs:
   code-security-analysis:
     permissions:
       security-events: write # required for uploading code scanning alerts
-    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@466c0c9247044e2fefc64bbc42ae1ef39836c3ff
+    # mozilla/ssdlc-actions@1f6499e — first commit with the Semgrep job (PR #22)
+    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@1f6499e564c784352777377dc3c1a9467fd1159d
