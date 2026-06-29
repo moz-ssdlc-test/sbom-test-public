@@ -1,15 +1,55 @@
 name: SSDLC Actions
 
+# NOTE: This workflow inlines the Semgrep job for fork-testing purposes.
+# In production (moz-ssdlc-test/sbom-test-public, mozilla repos), this file
+# uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@<sha>
+# which is the canonical reusable workflow. The inline form below is functionally
+# equivalent to that reusable workflow's `semgrep` job at SHA 1f6499e.
+
 on:
   push:
-    branches: ["main"] 
+    branches: ["main"]
   pull_request:
-    branches: ["main"] 
+    branches: ["main"]
 
 permissions: {}
 
 jobs:
-  code-security-analysis:
+  semgrep:
+    runs-on: ubuntu-latest
     permissions:
-      security-events: write # required for uploading code scanning alerts
-    uses: mozilla/ssdlc-actions/.github/workflows/code-security-analysis-public-repo.yml@466c0c9247044e2fefc64bbc42ae1ef39836c3ff # TODO: update to the latest hash
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Semgrep
+        run: pip install --no-cache-dir semgrep==1.168.0
+
+      - name: Run Semgrep (SARIF)
+        run: |
+          semgrep scan \
+            --config p/owasp-top-ten \
+            --config p/secrets \
+            --config p/security-audit \
+            --severity ERROR \
+            --sarif --output semgrep.sarif \
+            --metrics=off \
+            --disable-version-check \
+            .
+
+      - name: Upload Semgrep SARIF to GitHub code scanning
+        if: ${{ always() && hashFiles('semgrep.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@b0c4fd77f6c559021d78430ec4d0d169ae74a4eb # v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
